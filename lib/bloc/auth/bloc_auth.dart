@@ -14,15 +14,18 @@ class BlocAuth extends Bloc<EventAuth, StateAuth> {
         emit(StateAuthLoading());
         var response =
             await _repository.login(event.username!, event.password!);
-        print(response.body);
         AuthModel _authModel =
             new AuthModel.fromJson(jsonDecode(response.body));
 
         if (response.statusCode == 200) {
           await _repository.store_token(_authModel.token!);
-          var token = await _repository.read_token();
           emit(StateAuthResponse(
               stateprogress: STATEPROGRESS.LOGGED_IN,
+              code: response.statusCode,
+              message: _authModel.message));
+        } else if (response.statusCode == 408) {
+          emit(StateAuthResponse(
+              stateprogress: STATEPROGRESS.LOGGED_OUT,
               code: response.statusCode,
               message: _authModel.message));
         } else {
@@ -35,6 +38,7 @@ class BlocAuth extends Bloc<EventAuth, StateAuth> {
     );
     on<EventAuthLogout>(
       (event, emit) async {
+        emit(StateAuthLoading());
         await _repository.remove_token();
         var response = await _repository.check_token();
         emit(StateAuthCheckIsLoggedIn(isLoggedIn: response));
@@ -44,7 +48,6 @@ class BlocAuth extends Bloc<EventAuth, StateAuth> {
     on<EventAuthIsLoggedIn>(
       (event, emit) async {
         var response = await _repository.check_token();
-        var token = await _repository.read_token();
         emit(StateAuthCheckIsLoggedIn(isLoggedIn: response));
       },
     );

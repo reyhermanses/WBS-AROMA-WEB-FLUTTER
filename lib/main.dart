@@ -45,7 +45,6 @@ class MyApp extends StatelessWidget {
           child: LayoutBuilder(
             builder: (context, constraints) {
               if (constraints.maxWidth > 800) {
-                // return LandingPageWeb();
                 isWeb = false;
               } else {
                 isWeb = true;
@@ -94,9 +93,7 @@ class _AuthInitializerState extends State<AuthInitializer> {
     double height = MediaQuery.of(context).size.width;
     return BlocListener<BlocAuth, StateAuth>(
       listener: (context, state) {
-        if (state is StateAuthInit) {
-          // _blocAuth!.add(EventAuthIsLoggedIn());
-        }
+        if (state is StateAuthInit) {}
         if (state is StateAuthCheckIsLoggedIn) {
           fStateLogin(state.isLoggedIn!);
         }

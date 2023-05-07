@@ -1,3 +1,4 @@
+import 'package:aggregator/model/reports/report_get_by_id_model.dart';
 import 'package:aggregator/model/reports/report_list_model.dart';
 import 'package:equatable/equatable.dart';
 
@@ -14,11 +15,13 @@ class StateReportPostResponse extends StateReport {
   String? message;
   int? code;
   ReportListModel? reportListModel;
+  ReportGetByIdModel? rgbim;
 
   StateReportPostResponse(
-      {this.status, this.message, this.code, this.reportListModel});
+      {this.status, this.message, this.code, this.reportListModel, this.rgbim});
 
-  List<Object> get props => [status!, message!, code!, reportListModel!];
+  List<Object> get props =>
+      [status!, message!, code!, reportListModel!, rgbim!];
 }
 
 class StateReportListResponse extends StateReport {

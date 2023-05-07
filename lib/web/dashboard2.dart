@@ -28,32 +28,30 @@ class _Dashboard2State extends State<Dashboard2> {
   STATEPROGRESS _progress = STATEPROGRESS.LOGGED_OUT;
 
   fStateProgress(state) {
-    if (state.code == 200) {
-      setState(() {
-        print(state.message);
-        _progress = STATEPROGRESS.LOGGED_IN;
-        isLoading = false;
-        widget.storeIsLoggedIn!(state.isLoggedIn);
-      });
-    } else {
-      setState(() {
-        print(state.message);
-        _progress = STATEPROGRESS.LOGGED_OUT;
-        isLoading = false;
-        widget.storeIsLoggedIn!(false);
-      });
-    }
-    setState(() {
-      Fluttertoast.showToast(
-          msg: "${state.message}",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.TOP,
-          timeInSecForIosWeb: 2,
-          backgroundColor:
-              state.status == true ? Colors.greenAccent : Colors.red,
-          textColor: Colors.white,
-          fontSize: 18.0);
-    });
+    // if (state.code == 200) {
+    //   setState(() {
+    //     _progress = STATEPROGRESS.LOGGED_IN;
+    //     isLoading = false;
+    //     widget.storeIsLoggedIn!(state.isLoggedIn);
+    //   });
+    // } else {
+    //   setState(() {
+    //     _progress = STATEPROGRESS.LOGGED_OUT;
+    //     isLoading = false;
+    //     widget.storeIsLoggedIn!(false);
+    //   });
+    // }
+    // setState(() {
+    //   Fluttertoast.showToast(
+    //       msg: "${state.message}",
+    //       toastLength: Toast.LENGTH_LONG,
+    //       gravity: ToastGravity.TOP,
+    //       timeInSecForIosWeb: 2,
+    //       backgroundColor:
+    //           state.status == true ? Colors.greenAccent : Colors.red,
+    //       textColor: Colors.white,
+    //       fontSize: 18.0);
+    // });
   }
 
   @override
@@ -67,13 +65,8 @@ class _Dashboard2State extends State<Dashboard2> {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
-    print(width);
-    print(height);
     barLeftWidth = width / 5;
     barRightWidth = width - barLeftWidth;
-    print(barLeftWidth);
-    print(barRightWidth);
-    print(barLeftWidth + barRightWidth);
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -120,34 +113,39 @@ class _Dashboard2State extends State<Dashboard2> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 5.0, horizontal: 5.0),
-                                alignment: Alignment.center,
-                                width: width * 0.2,
-                                decoration: BoxDecoration(
-                                  color: Color.fromARGB(255, 43, 83, 147),
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(20),
-                                      bottomRight: Radius.circular(20)),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Color.fromARGB(255, 112, 111, 111)
-                                          .withOpacity(0.5),
-                                      spreadRadius: 1,
-                                      blurRadius: 1,
-                                      offset: Offset(
-                                          0, 1), // changes position of shadow
-                                    ),
-                                  ],
-                                ),
-                                child: MontserratBoldWhite('WBS', 35.0)),
+                            Center(
+                              child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 10.0, horizontal: 10.0),
+                                  alignment: Alignment.center,
+                                  width: width > 950 ? 150 : 80,
+                                  decoration: BoxDecoration(
+                                    color: Color.fromARGB(255, 43, 83, 147),
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(20),
+                                        bottomRight: Radius.circular(20)),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            Color.fromARGB(255, 112, 111, 111)
+                                                .withOpacity(0.5),
+                                        spreadRadius: 1,
+                                        blurRadius: 1,
+                                        offset: Offset(
+                                            0, 1), // changes position of shadow
+                                      ),
+                                    ],
+                                  ),
+                                  child: width > 750
+                                      ? MontserratBoldWhite('WBS', 35.0)
+                                      : MontserratBoldWhite('WBS', 20.0)),
+                            ),
                             SizedBox(height: 50),
                             Container(
                               padding: EdgeInsets.symmetric(
                                   vertical: 10.0, horizontal: 10.0),
                               alignment: Alignment.center,
-                              width: width * 0.2,
+                              width: width > 950 ? width * 0.2 : 60,
                               decoration: BoxDecoration(
                                 color: Color.fromARGB(255, 43, 83, 147),
                                 borderRadius: BorderRadius.only(
@@ -171,7 +169,9 @@ class _Dashboard2State extends State<Dashboard2> {
                                     color: Colors.white,
                                   ),
                                   SizedBox(width: 15.0),
-                                  MontserratWhite('Dashboard', 18.0),
+                                  if (width > 950) ...[
+                                    MontserratBoldWhite('Dashboard', 18.0),
+                                  ]
                                 ],
                               ),
                             ),
@@ -180,9 +180,9 @@ class _Dashboard2State extends State<Dashboard2> {
                               padding: EdgeInsets.symmetric(
                                   vertical: 10.0, horizontal: 10.0),
                               alignment: Alignment.center,
-                              width: width * 0.2,
+                              width: width > 950 ? width * 0.2 : 60,
                               decoration: BoxDecoration(
-                                color: Color.fromARGB(255, 43, 83, 147),
+                                color: Colors.amberAccent,
                                 borderRadius: BorderRadius.only(
                                     topLeft: Radius.circular(20),
                                     bottomRight: Radius.circular(20)),
@@ -201,10 +201,12 @@ class _Dashboard2State extends State<Dashboard2> {
                                 children: [
                                   Icon(
                                     Icons.report_problem,
-                                    color: Colors.white,
+                                    color: Color.fromARGB(255, 43, 83, 147),
                                   ),
                                   SizedBox(width: 15.0),
-                                  MontserratWhite('Reports', 18.0),
+                                  if (width > 950) ...[
+                                    MontserratBoldBlue('Reports', 18.0),
+                                  ]
                                 ],
                               ),
                             ),
@@ -215,7 +217,7 @@ class _Dashboard2State extends State<Dashboard2> {
                               padding: EdgeInsets.symmetric(
                                   vertical: 10.0, horizontal: 10.0),
                               alignment: Alignment.center,
-                              width: width * 0.2,
+                              width: width > 950 ? width * 0.2 : 60,
                               decoration: BoxDecoration(
                                 color: Color.fromARGB(255, 43, 83, 147),
                                 borderRadius: BorderRadius.only(
@@ -239,74 +241,52 @@ class _Dashboard2State extends State<Dashboard2> {
                                     color: Colors.white,
                                   ),
                                   SizedBox(width: 15.0),
-                                  MontserratWhite('Settings', 18.0),
+                                  if (width > 950) ...[
+                                    MontserratWhite('Settings', 18.0),
+                                  ]
                                 ],
                               ),
                             ),
                             SizedBox(
                               height: height * 0.3,
                             ),
-                            BlocListener<BlocAuth, StateAuth>(
-                                listener: (context, state) {
-                              if (state is StateAuthResponse) {
-                                fStateProgress(state);
-                              }
-                            }, child: BlocBuilder<BlocAuth, StateAuth>(
-                                    builder: ((context, state) {
-                              if (state is StateAuthLoading) {
-                                return Container(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(20.0),
-                                    child: Column(
-                                      children: [
-                                        SpinKitSpinningLines(
-                                          color:
-                                              Color.fromARGB(255, 63, 63, 62),
-                                        ),
-                                        Montserrat('Loading...', 11.0)
-                                      ],
+                            InkWell(
+                              onTap: () {
+                                _blocAuth!.add(EventAuthLogout());
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 10.0),
+                                alignment: Alignment.center,
+                                width: width > 950 ? width * 0.2 : 60,
+                                decoration: BoxDecoration(
+                                  color: Colors.redAccent,
+                                  borderRadius: BorderRadius.circular(20),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Color.fromARGB(255, 112, 111, 111)
+                                          .withOpacity(0.5),
+                                      spreadRadius: 1,
+                                      blurRadius: 1,
+                                      offset: Offset(
+                                          0, 1), // changes position of shadow
                                     ),
-                                  ),
-                                );
-                              }
-
-                              return InkWell(
-                                onTap: () {
-                                  _blocAuth!.add(EventAuthLogout());
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 10.0, horizontal: 10.0),
-                                  alignment: Alignment.center,
-                                  width: width * 0.2,
-                                  decoration: BoxDecoration(
-                                    color: Colors.redAccent,
-                                    borderRadius: BorderRadius.circular(20),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color:
-                                            Color.fromARGB(255, 112, 111, 111)
-                                                .withOpacity(0.5),
-                                        spreadRadius: 1,
-                                        blurRadius: 1,
-                                        offset: Offset(
-                                            0, 1), // changes position of shadow
-                                      ),
-                                    ],
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.logout,
-                                        color: Colors.white,
-                                      ),
-                                      SizedBox(width: 15.0),
-                                      MontserratWhite('Logout', 18.0),
-                                    ],
-                                  ),
+                                  ],
                                 ),
-                              );
-                            })))
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.logout,
+                                      color: Colors.white,
+                                    ),
+                                    SizedBox(width: 15.0),
+                                    if (width > 950) ...[
+                                      MontserratWhite('Logout', 18.0),
+                                    ]
+                                  ],
+                                ),
+                              ),
+                            )
                           ],
                         ),
                       ),

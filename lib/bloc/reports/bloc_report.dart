@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:aggregator/bloc/reports/event_report.dart';
 import 'package:aggregator/bloc/reports/state_report.dart';
+import 'package:aggregator/model/reports/report_get_by_id_model.dart';
 import 'package:aggregator/model/reports/report_list_model.dart';
 import 'package:aggregator/model/reports/report_model.dart';
 import 'package:aggregator/repository/repository_auth.dart';
@@ -28,8 +29,6 @@ class BlocReport extends Bloc<EventReport, StateReport> {
       ReportListModel _rlm =
           ReportListModel.fromJson(jsonDecode(responseList.body));
 
-      print(_rlm.message);
-
       if (responseReport.statusCode == 201) {
         emit(StateReportPostResponse(
             status: _rm.status,
@@ -52,12 +51,16 @@ class BlocReport extends Bloc<EventReport, StateReport> {
       if (response.statusCode == 200) {
         ReportListModel _rlm =
             ReportListModel.fromJson(jsonDecode(response.body));
-        // emit(StateReportListResponse(reportListModel: _rlm));
         emit(StateReportPostResponse(
             reportListModel: _rlm, message: _rlm.message));
       } else if (response.statusCode == 401) {
         emit(StateReportPostResponse(
             status: false, message: 'Go Find Your Credential', code: 401));
+      } else if (response.statusCode == 408) {
+        emit(StateReportPostResponse(
+            status: false,
+            message: 'Check your network connection',
+            code: response.statusCode));
       } else
         emit(StateReportPostResponse(
             status: false, message: 'Unknown', code: 404));
@@ -71,10 +74,8 @@ class BlocReport extends Bloc<EventReport, StateReport> {
       var responseList = await _repositoryReport.list(token);
 
       try {
-        print(response.statusCode);
         if (response.statusCode == 201) {
           ReportModel _rm = ReportModel.fromJson(jsonDecode(response.body));
-          print(_rm.message);
           ReportListModel _rlm =
               ReportListModel.fromJson(jsonDecode(responseList.body));
           emit(StateReportPostResponse(
@@ -85,12 +86,86 @@ class BlocReport extends Bloc<EventReport, StateReport> {
         } else if (response.statusCode == 401) {
           emit(StateReportPostResponse(
               status: false, message: 'Go Find Your Credential', code: 401));
+        } else if (response.statusCode == 408) {
+          emit(StateReportPostResponse(
+              status: false,
+              message: 'Check your network connection',
+              code: 400));
         } else
           emit(StateReportPostResponse(
               status: false, message: 'Unknown', code: 404));
       } catch (e) {
-        print(e.toString());
+        emit(StateReportPostResponse(
+            status: false, message: e.toString(), code: 500));
       }
     });
+
+    on<EventReportGetById>(
+      (event, emit) async {
+        emit(StateReportLoading());
+        var token = await _repositoryAuth.read_token();
+        var response = await _repositoryReport.get_by_id(event.id, token);
+
+        try {
+          if (response.statusCode == 200) {
+            ReportGetByIdModel _rgbim =
+                ReportGetByIdModel.fromJson(jsonDecode(response.body));
+            emit(StateReportPostResponse(
+                status: _rgbim.status,
+                message: _rgbim.message,
+                code: response.statusCode,
+                rgbim: _rgbim));
+          } else if (response.statusCode == 401) {
+            emit(StateReportPostResponse(
+                status: false, message: 'Go find your credential!', code: 404));
+          } else if (response.statusCode == 408) {
+            emit(StateReportPostResponse(
+                status: false,
+                message: 'Check your network connection',
+                code: 400));
+          } else
+            emit(StateReportPostResponse(
+                status: false, message: 'Unknown', code: 404));
+        } catch (e) {
+          emit(StateReportPostResponse(
+              status: false, message: 'Unknown', code: 404));
+        }
+      },
+    );
+
+    on<EventReportUpdate>(
+      (event, emit) async {
+        emit(StateReportLoading());
+
+        var token = await _repositoryAuth.read_token();
+        var response = await _repositoryReport.update(
+            event.id!,
+            event.reportNumber!,
+            event.name!,
+            event.title!,
+            event.description!,
+            token);
+        var responseUpdate =
+            await _repositoryReport.get_by_id(event.id!, token);
+
+        if (response.statusCode == 200) {
+          ReportModel _rm = ReportModel.fromJson(jsonDecode(response.body));
+          ReportGetByIdModel _rgbim =
+              ReportGetByIdModel.fromJson(jsonDecode(responseUpdate.body));
+          emit(StateReportPostResponse(
+              status: _rm.status,
+              message: _rm.message,
+              code: response.statusCode,
+              rgbim: _rgbim));
+        } else if (response.statusCode == 408) {
+          emit(StateReportPostResponse(
+              status: false,
+              message: 'Check your network connection',
+              code: response.statusCode));
+        } else
+          emit(StateReportPostResponse(
+              status: false, message: 'Unknown', code: 404));
+      },
+    );
   }
 }

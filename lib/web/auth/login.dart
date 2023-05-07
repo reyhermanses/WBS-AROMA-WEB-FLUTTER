@@ -22,9 +22,8 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _username = new TextEditingController(text: "10691");
-  TextEditingController _password =
-      new TextEditingController(text: "j4s4m4rg4");
+  TextEditingController _username = new TextEditingController(text: "");
+  TextEditingController _password = new TextEditingController(text: "");
   bool _obsecureText = true;
 
   //bloc state
@@ -35,14 +34,12 @@ class _LoginState extends State<Login> {
   fStateProgress(state) {
     if (state.code == 200) {
       setState(() {
-        print(state.message);
         _progress = STATEPROGRESS.LOGGED_IN;
         isLoading = false;
         widget.storeIsLoggedIn!(true);
       });
     } else {
       setState(() {
-        print(state.message);
         _progress = STATEPROGRESS.LOGGED_OUT;
         isLoading = false;
         widget.storeIsLoggedIn!(false);
@@ -70,7 +67,6 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
-    print(MediaQuery.of(context).size.width);
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -87,7 +83,7 @@ class _LoginState extends State<Login> {
                     Padding(
                       padding:
                           EdgeInsets.only(top: 10.0, left: 20.0, bottom: 10.0),
-                      child: MontserratWhite('WBS', 30.0),
+                      child: MontserratWhite('Whistle Blowing System', 30.0),
                     ),
                   ],
                 ),

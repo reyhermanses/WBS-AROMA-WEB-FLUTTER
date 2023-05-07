@@ -5,8 +5,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class RepositoryAuth {
+  final storage = new FlutterSecureStorage();
   login(String username, String password) async {
-    var response = await http.post(
+    var response = await http
+        .post(
       Uri.parse(
           'http://aroma-backend-aroma-backend.apps.ocdev.jasamarga.co.id/api/v1/login'),
       headers: <String, String>{
@@ -16,12 +18,19 @@ class RepositoryAuth {
         'username': username,
         'password': password,
       }),
-    );
+    )
+        .onError((error, stackTrace) async {
+      await Future.delayed(Duration(seconds: 5));
+      return http.Response(
+          jsonEncode({
+            'message': 'Check your network connection',
+          }),
+          408);
+    });
     return response;
   }
 
   store_token(String token) async {
-    final storage = new FlutterSecureStorage();
     await storage.write(key: 'jwt', value: token);
   }
 
@@ -34,12 +43,10 @@ class RepositoryAuth {
   }
 
   read_token() async {
-    final storage = new FlutterSecureStorage();
-    return storage.read(key: 'jwt');
+    return await storage.read(key: 'jwt');
   }
 
   remove_token() async {
-    final storage = new FlutterSecureStorage();
-    storage.delete(key: 'jwt');
+    await storage.delete(key: 'jwt');
   }
 }
